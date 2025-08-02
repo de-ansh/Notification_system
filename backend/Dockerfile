@@ -1,13 +1,15 @@
-# Use Node.js 18 Alpine for smaller image size
-FROM node:18-alpine
+# Use Node.js 18 Debian for better Prisma compatibility
+FROM node:18-slim
 
 # Set working directory
 WORKDIR /app
 
 # Install system dependencies
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     curl \
-    postgresql-client
+    postgresql-client \
+    openssl \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package*.json ./
@@ -28,11 +30,13 @@ RUN npm run build
 RUN npm prune --production
 
 # Create non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nodejs -u 1001
+RUN groupadd -g 1001 nodejs
+RUN useradd -u 1001 -g nodejs -s /bin/bash -m nodejs
 
 # Change ownership of the app directory
 RUN chown -R nodejs:nodejs /app
+
+# No script needed - we'll run commands directly
 USER nodejs
 
 # Expose port
@@ -43,4 +47,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:5001/api/health || exit 1
 
 # Start the application
-CMD ["npm", "start"] 
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"] 

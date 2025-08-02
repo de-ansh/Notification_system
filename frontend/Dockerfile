@@ -21,6 +21,9 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# Debug: Check what's in the standalone directory
+RUN ls -la .next/standalone || echo "No standalone directory found"
+
 # Remove dev dependencies to reduce image size
 RUN npm prune --production
 
@@ -34,9 +37,11 @@ ENV NODE_ENV production
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nodejs -u 1001
 
-# Copy built application
-COPY --from=builder --chown=nodejs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nodejs:nodejs /app/.next/static ./.next/static
+# Copy the entire app directory for production
+COPY --from=builder --chown=nodejs:nodejs /app ./
+
+# Debug: List files to see what's available
+RUN ls -la
 
 USER nodejs
 
@@ -51,4 +56,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:3000 || exit 1
 
 # Start the application
-CMD ["node", "server.js"] 
+CMD ["npm", "start"] 
