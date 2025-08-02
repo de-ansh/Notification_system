@@ -19,7 +19,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.NODE_ENV === 'production' ? true : "http://localhost:3000",
     methods: ["GET", "POST"]
   }
 });
@@ -28,7 +28,10 @@ const prisma = new PrismaClient();
 const notificationService = new NotificationService(io);
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' ? true : 'http://localhost:3000',
+  credentials: true
+}));
 app.use(express.json());
 
 // Socket.io connection handling
