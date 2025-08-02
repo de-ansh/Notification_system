@@ -43,10 +43,10 @@ services:
       dockerfile: Dockerfile
     container_name: notification_backend
     environment:
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/notification_system
-      - REDIS_URL=redis://redis:6379
-      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
-      - PORT=5001
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:password@postgres:5432/notification_system}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      - PORT=${PORT:-5001}
       - NODE_ENV=production
     ports:
       - "5001:5001"
@@ -70,7 +70,7 @@ services:
       dockerfile: Dockerfile.simple
     container_name: notification_frontend
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:5001
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:5001}
       - NODE_ENV=production
     ports:
       - "3000:3000"
