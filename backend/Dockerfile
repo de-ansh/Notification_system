@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     openssl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy package files
+# Copy package files first
 COPY package*.json ./
 
 # Install all dependencies (including dev dependencies for build)
@@ -36,7 +36,6 @@ RUN useradd -u 1001 -g nodejs -s /bin/bash -m nodejs
 # Change ownership of the app directory
 RUN chown -R nodejs:nodejs /app
 
-# No script needed - we'll run commands directly
 USER nodejs
 
 # Expose port

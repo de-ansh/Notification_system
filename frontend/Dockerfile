@@ -1,9 +1,11 @@
-# Use Node.js 18 Alpine for smaller image size
-FROM node:18-alpine AS base
+# Use Node.js 18 Debian for consistency with backend
+FROM node:18-slim AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 # Copy package files
@@ -21,8 +23,8 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Debug: Check what's in the standalone directory
-RUN ls -la .next/standalone || echo "No standalone directory found"
+# Ensure standalone build is working
+RUN ls -la .next/standalone
 
 # Remove dev dependencies to reduce image size
 RUN npm prune --production
@@ -34,13 +36,15 @@ WORKDIR /app
 ENV NODE_ENV production
 
 # Create non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nodejs -u 1001
+RUN groupadd -g 1001 nodejs
+RUN useradd -u 1001 -g nodejs -s /bin/bash -m nodejs
 
-# Copy the entire app directory for production
-COPY --from=builder --chown=nodejs:nodejs /app ./
+# Copy built application
+COPY --from=builder --chown=nodejs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nodejs:nodejs /app/.next/static ./.next/static
 
-# Debug: List files to see what's available
+
+# List files to verify build
 RUN ls -la
 
 USER nodejs
@@ -56,4 +60,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:3000 || exit 1
 
 # Start the application
-CMD ["npm", "start"] 
+CMD ["node", "server.js"] 
