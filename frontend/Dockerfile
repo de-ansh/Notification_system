@@ -12,7 +12,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies (including dev dependencies for build)
-RUN npm ci
+RUN npm config set registry https://registry.npmjs.org/ && \
+    npm ci --prefer-offline --no-audit --network-timeout=100000
 
 # Rebuild the source code only when needed
 FROM base AS builder

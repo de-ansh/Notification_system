@@ -20,6 +20,7 @@
 ### 3. Docker Configuration
 1. **Docker Compose**: Use `docker-compose.prod.yml`
 2. **Dockerfile Path**: Leave empty (Docker Compose will handle this)
+3. **Note**: The system uses simplified Dockerfiles for better reliability
 
 ### 4. Environment Variables
 Add these environment variables in Coolify:
