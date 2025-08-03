@@ -44,6 +44,9 @@ RUN useradd -u 1001 -g nodejs -s /bin/bash -m nodejs
 COPY --from=builder --chown=nodejs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nodejs:nodejs /app/.next/static ./.next/static
 
+# Copy startup script
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
 # List files to verify build
 RUN ls -la
@@ -60,5 +63,5 @@ ENV HOSTNAME "0.0.0.0"
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:3000 || exit 1
 
-# Start the application
-CMD ["node", "server.js"] 
+# Start the application using startup script
+CMD ["/app/start.sh"] 

@@ -45,5 +45,9 @@ ENV NODE_ENV production
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:3000 || exit 1
 
-# Start the application using standalone server
-CMD ["node", ".next/standalone/server.js"] 
+# Copy startup script
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+# Start the application using startup script
+CMD ["/app/start.sh"] 

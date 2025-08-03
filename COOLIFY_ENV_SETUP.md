@@ -8,8 +8,9 @@ The 404 error is happening because the frontend is trying to connect to `localho
 
 ### For Frontend Service:
 ```bash
-NEXT_PUBLIC_API_URL=https://sc4csk0scsgco0co8sk80coo.82.25.105.179.sslip.io:5001
+NEXT_PUBLIC_API_URL=http://cco0c0gs4808cwogwcgw04kw.82.25.105.179.sslip.io:5001
 NODE_ENV=production
+PORT=3000
 ```
 
 ### For Backend Service:
@@ -25,19 +26,19 @@ NODE_ENV=production
 
 Try these alternatives in order:
 
-### Option 1: HTTP instead of HTTPS
+### Option 1: Use HTTPS instead of HTTP
 ```bash
-NEXT_PUBLIC_API_URL=http://sc4csk0scsgco0co8sk80coo.82.25.105.179.sslip.io:5001
+NEXT_PUBLIC_API_URL=https://cco0c0gs4808cwogwcgw04kw.82.25.105.179.sslip.io:5001
 ```
 
-### Option 2: Use IP address directly
+### Option 2: Remove port number (if Coolify handles routing)
+```bash
+NEXT_PUBLIC_API_URL=http://cco0c0gs4808cwogwcgw04kw.82.25.105.179.sslip.io
+```
+
+### Option 3: Use IP address directly
 ```bash
 NEXT_PUBLIC_API_URL=http://82.25.105.179:5001
-```
-
-### Option 3: Remove port number
-```bash
-NEXT_PUBLIC_API_URL=https://sc4csk0scsgco0co8sk80coo.82.25.105.179.sslip.io
 ```
 
 ## 📋 Steps to Apply the Fix
@@ -53,7 +54,7 @@ NEXT_PUBLIC_API_URL=https://sc4csk0scsgco0co8sk80coo.82.25.105.179.sslip.io
 
 ### Test Backend First:
 ```bash
-curl https://sc4csk0scsgco0co8sk80coo.82.25.105.179.sslip.io:5001/api/health
+curl http://cco0c0gs4808cwogwcgw04kw.82.25.105.179.sslip.io:5001/api/health
 ```
 
 Expected response:
@@ -62,7 +63,7 @@ Expected response:
 ```
 
 ### Test Frontend:
-1. Visit: `https://sc4csk0scsgco0co8sk80coo.82.25.105.179.sslip.io`
+1. Visit: `http://cco0c0gs4808cwogwcgw04kw.82.25.105.179.sslip.io`
 2. Check browser console for errors
 3. Try creating a user or post
 
