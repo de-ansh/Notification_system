@@ -22,6 +22,9 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# Ensure standalone build is working
+RUN ls -la .next/standalone
+
 # Create non-root user
 RUN groupadd -g 1001 nodejs && \
     useradd -u 1001 -g nodejs -s /bin/bash -m nodejs
@@ -42,5 +45,5 @@ ENV NODE_ENV production
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:3000 || exit 1
 
-# Start the application
-CMD ["npm", "start"] 
+# Start the application using standalone server
+CMD ["node", ".next/standalone/server.js"] 

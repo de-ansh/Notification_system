@@ -13,7 +13,7 @@ import {
   CreateLikeRequest 
 } from '../types';
 
-const API_BASE_URL = 'http://localhost:5001/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5001/api';
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
@@ -27,7 +27,8 @@ export default function Home() {
 
   useEffect(() => {
     // Initialize socket connection
-    const newSocket = io('http://localhost:5001');
+    const socketUrl = process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') : 'http://localhost:5001';
+    const newSocket = io(socketUrl);
     setSocket(newSocket);
 
     // Load initial data
