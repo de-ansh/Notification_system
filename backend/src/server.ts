@@ -20,7 +20,7 @@ const server = createServer(app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
   cors: {
     origin: process.env.NODE_ENV === 'production' 
-      ? ["https://notification-system-frontend-q6ii.vercel.app", "http://localhost:3000"] 
+      ? ["https://notification-system-frontend-q6ii.vercel.app", "http://localhost:3000", "http://cco0c0gs4808cwogwcgw04kw.82.25.105.179.sslip.io:3000"] 
       : "http://localhost:3000",
     methods: ["GET", "POST"]
   }
@@ -32,7 +32,7 @@ const notificationService = new NotificationService(io);
 // Middleware
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ["https://notification-system-frontend-q6ii.vercel.app", "http://localhost:3000"] 
+    ? ["https://notification-system-frontend-q6ii.vercel.app", "http://localhost:3000", "http://cco0c0gs4808cwogwcgw04kw.82.25.105.179.sslip.io:3000"] 
     : 'http://localhost:3000',
   credentials: true
 }));

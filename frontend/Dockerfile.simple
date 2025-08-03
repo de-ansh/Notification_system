@@ -33,6 +33,11 @@ RUN chmod +x /app/start.sh
 RUN groupadd -g 1001 nodejs && \
     useradd -u 1001 -g nodejs -s /bin/bash -m nodejs
 
+# Copy standalone build and static files to proper locations
+RUN cp -r .next/standalone/* /app/ && \
+    mkdir -p /app/.next && \
+    cp -r .next/static /app/.next/static
+
 # Change ownership
 RUN chown -R nodejs:nodejs /app
 
