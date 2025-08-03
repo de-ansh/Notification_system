@@ -25,6 +25,10 @@ RUN npm run build
 # Ensure standalone build is working
 RUN ls -la .next/standalone
 
+# Copy startup script and make it executable BEFORE user switch
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 # Create non-root user
 RUN groupadd -g 1001 nodejs && \
     useradd -u 1001 -g nodejs -s /bin/bash -m nodejs
@@ -44,10 +48,6 @@ ENV NODE_ENV production
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:3000 || exit 1
-
-# Copy startup script
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
 
 # Start the application using startup script
 CMD ["/app/start.sh"] 
