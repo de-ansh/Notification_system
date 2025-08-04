@@ -12,7 +12,7 @@ import {
   CreateCommentRequest, 
   CreateLikeRequest 
 } from '../types';
-import DebugEnv from './debug-env';
+
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://uwwss4w0go8ccc4c0sc4gwww.82.25.105.179.sslip.io:5001/api';
 
@@ -455,8 +455,7 @@ export default function Home() {
         )}
       </div>
       
-      {/* Debug Environment Variables */}
-      <DebugEnv />
+ 
     </div>
   );
 } 
