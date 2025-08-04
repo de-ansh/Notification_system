@@ -24,6 +24,9 @@ export default function Home() {
   const [newComment, setNewComment] = useState<string>('');
   const [socket, setSocket] = useState<Socket | null>(null);
   const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [showCreateUserModal, setShowCreateUserModal] = useState<boolean>(false);
+  const [newUser, setNewUser] = useState<{ username: string; email: string }>({ username: '', email: '' });
+  const [isCreatingUser, setIsCreatingUser] = useState<boolean>(false);
 
   useEffect(() => {
     // Initialize socket connection
@@ -84,18 +87,69 @@ export default function Home() {
   };
 
   const createUser = async (): Promise<void> => {
-    const username = prompt('Enter username:');
-    const email = prompt('Enter email:');
-    
-    if (!username || !email) return;
+    if (!newUser.username.trim() || !newUser.email.trim()) {
+      alert('Please fill in all fields');
+      return;
+    }
 
+    setIsCreatingUser(true);
     try {
-      const userData: CreateUserRequest = { username, email };
+      const userData: CreateUserRequest = { 
+        username: newUser.username.trim(), 
+        email: newUser.email.trim() 
+      };
       const response = await axios.post<User>(`${API_BASE_URL}/users`, userData);
       setUsers(prev => [...prev, response.data]);
+      setNewUser({ username: '', email: '' });
+      setShowCreateUserModal(false);
       alert('User created successfully!');
     } catch (error: any) {
       alert('Error creating user: ' + error.response?.data?.error);
+    } finally {
+      setIsCreatingUser(false);
+    }
+  };
+
+  const createDefaultUsers = async (): Promise<void> => {
+    const defaultUsers = [
+      { username: 'john_doe', email: 'john@example.com' },
+      { username: 'jane_smith', email: 'jane@example.com' },
+      { username: 'bob_wilson', email: 'bob@example.com' },
+      { username: 'alice_brown', email: 'alice@example.com' }
+    ];
+
+    try {
+      for (const userData of defaultUsers) {
+        await axios.post<User>(`${API_BASE_URL}/users`, userData);
+      }
+      loadUsers(); // Reload users after creating defaults
+      alert('Default users created successfully!');
+    } catch (error: any) {
+      alert('Error creating default users: ' + error.response?.data?.error);
+    }
+  };
+
+  const createDefaultPosts = async (): Promise<void> => {
+    if (users.length === 0) {
+      alert('Please create users first!');
+      return;
+    }
+
+    const defaultPosts = [
+      { content: 'Hello everyone! This is my first post on the notification system.', authorId: users[0].id },
+      { content: 'Great to see this notification system in action!', authorId: users[1].id },
+      { content: 'I love how real-time notifications work here!', authorId: users[2].id },
+      { content: 'This is a really cool feature for staying updated.', authorId: users[3].id }
+    ];
+
+    try {
+      for (const postData of defaultPosts) {
+        await axios.post<Post>(`${API_BASE_URL}/posts`, postData);
+      }
+      loadPosts(); // Reload posts after creating defaults
+      alert('Default posts created successfully!');
+    } catch (error: any) {
+      alert('Error creating default posts: ' + error.response?.data?.error);
     }
   };
 
@@ -188,10 +242,16 @@ export default function Home() {
               ))}
             </select>
             <button 
-              onClick={createUser}
+              onClick={() => setShowCreateUserModal(true)}
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
               Create User
+            </button>
+            <button 
+              onClick={createDefaultUsers}
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+            >
+              Create Default Users
             </button>
           </div>
         </div>
@@ -200,7 +260,15 @@ export default function Home() {
           {/* Posts Section */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold mb-4">Posts</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">Posts</h2>
+                <button 
+                  onClick={createDefaultPosts}
+                  className="bg-purple-500 text-white px-3 py-1 rounded text-sm hover:bg-purple-600"
+                >
+                  Create Default Posts
+                </button>
+              </div>
               
               {/* Create Post */}
               {selectedUser && (
@@ -323,6 +391,62 @@ export default function Home() {
             )}
           </div>
         </div>
+
+        {/* Create User Modal */}
+        {showCreateUserModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+              <h3 className="text-xl font-semibold mb-4">Create New User</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    value={newUser.username}
+                    onChange={(e) => setNewUser(prev => ({ ...prev, username: e.target.value }))}
+                    placeholder="Enter username"
+                    className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={newUser.email}
+                    onChange={(e) => setNewUser(prev => ({ ...prev, email: e.target.value }))}
+                    placeholder="Enter email"
+                    className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={createUser}
+                  disabled={isCreatingUser}
+                  className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+                >
+                  {isCreatingUser ? 'Creating...' : 'Create User'}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowCreateUserModal(false);
+                    setNewUser({ username: '', email: '' });
+                  }}
+                  className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
