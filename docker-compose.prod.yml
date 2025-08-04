@@ -70,7 +70,7 @@ services:
       dockerfile: Dockerfile
     container_name: notification_frontend
     environment:
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://backend:5001}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://uwwss4w0go8ccc4c0sc4gwww.82.25.105.179.sslip.io:5001}
       - NODE_ENV=production
       - PORT=3000
     ports:

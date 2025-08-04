@@ -12,8 +12,13 @@ import {
   CreateCommentRequest, 
   CreateLikeRequest 
 } from '../types';
+import DebugEnv from './debug-env';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5001/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://uwwss4w0go8ccc4c0sc4gwww.82.25.105.179.sslip.io:5001/api';
+
+// Debug: Log the API URL being used
+console.log('NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
+console.log('API_BASE_URL:', API_BASE_URL);
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
@@ -30,7 +35,8 @@ export default function Home() {
 
   useEffect(() => {
     // Initialize socket connection
-    const socketUrl = process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') : 'http://localhost:5001';
+    const socketUrl = process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL : 'http://uwwss4w0go8ccc4c0sc4gwww.82.25.105.179.sslip.io:5001';
+    console.log('Socket URL:', socketUrl);
     const newSocket = io(socketUrl);
     setSocket(newSocket);
 
@@ -448,6 +454,9 @@ export default function Home() {
           </div>
         )}
       </div>
+      
+      {/* Debug Environment Variables */}
+      <DebugEnv />
     </div>
   );
 } 
